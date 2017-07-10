@@ -59,3 +59,12 @@ fi
 
 # Testing
 echo "[$ME]: The URL you want to download is $url, and you want to save it @ $output_path"
+
+# Ensure dependencies are met
+#   - Docker is installed
+#   - Connectivity
+#   - Dockerfile is built
+
+# Run docker container
+
+# Output results + path 
