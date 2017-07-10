@@ -1,0 +1,61 @@
+#!/bin/bash
+## Author: Ramzi Abdoch
+
+# global variables
+export ME=youtube2mp3
+URL_REGEX='(https?|ftp|file)://[-A-Za-z0-9\+&@#/%?=~_|!:,.;]*[-A-Za-z0-9\+&@#/%=~_|]'
+
+url=$1
+output_path=$4
+
+# usage
+if [ $# -lt 1 -o "$1" = "-h" -o "$1" = "-help" -o "$1" = "--help" ] ; then
+     cat <<-END
+	Usage: `basename $0` url [-o] [output_path]
+END
+     exit
+fi
+
+######################
+## Helper Functions ##
+######################
+
+# catch errors and assess accordingly
+catch() {
+  MYSELF="$0"               # equals to my script name
+  LASTLINE="$1"            # argument 1: last line of error occurence
+  LASTERR="$2"             # argument 2: error code of last command
+  echo "${ME}: line ${LASTLINE}: exit status of last command: ${LASTERR}"
+}
+
+# prompt the user for input and validate it
+prompt() {
+  message="$1"
+  pattern="$2"
+  value=""
+
+  while [[ ! "${value}" =~ ${pattern} ]]; do
+    [[ -n "${value}" ]] && echo "${value} is not valid" >&2
+    read -p "${message}: " value
+  done
+
+  echo ${value}
+}
+
+# Error checking
+set -euo pipefail
+trap 'catch ${LINENO} ${$?}' ERR
+
+# Validate URL
+if [[ ! $url =~ $URL_REGEX ]] ; then
+  echo "[$ME]: You have entered an invalid url"
+  url=`prompt "Please enter a valid Youtube URL" $URL_REGEX`
+fi
+
+# Validate output path if it exists
+if [[ ! $output_path -ne "" ]]; then
+  output_path=`pwd`
+fi
+
+# Testing
+echo "[$ME]: The URL you want to download is $url, and you want to save it @ $output_path"
